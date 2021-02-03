@@ -1,8 +1,11 @@
-class Color(object):
+import pymel.core as pm
+import random
+
+class RandomCurveColor(object):
 
     def __init__(self, *args, **kwargs):
 
-        super(Color, self).__init__(*args, **kwargs)
+        super(RandomCurveColor, self).__init__(*args, **kwargs)
 
         self.color_rgb_dict = {}
 
@@ -45,8 +48,21 @@ class Color(object):
         self.color_rgb_dict['light_grey']   = (0.75, 0.75, 0.75)
         self.color_rgb_dict['white']        = (1, 1, 1)
 
-    def random_curve_color_1(self, target_list, enable=True): # obsolete
-
+     def set_curve_shape_color(self, target_list, rgb=(0, 0, 0)):
+        target_list = self.is_list(target_list) # general.misc
+        for target in target_list:
+            target = pm.PyNode(target)
+            target_shape = self.get_visible_shape(target) # general.cleanup
+            if rgb:
+                r, g, b = rgb
+                target_shape.overrideRGBColors.set(True)
+                target_shape.overrideEnabled.set(True)
+                target_shape.overrideColorRGB.set(r, g, b)
+            else:
+                target_shape.overrideEnabled.set(False)
+   
+    def random_curve_color(self, target, enable=True):
+        
         system_random = random.SystemRandom()
         random_color_list = []
         random_color_list.append('white')
@@ -57,17 +73,22 @@ class Color(object):
         random_color_list.append('light_green')
         random_color_list.append('light_purple')
 
-        target_list = self.is_list(target_list) # general.misc
+        crv_shape_list = pm.listRelatives(target, ad = True, type = 'nurbsCurve')
+        crv_list = pm.listRelatives(crv_shape_list, parent = True)
+        crv_list = list(set(crv_list))
 
         if enable:
-            for target in target_list:
-                self.set_curve_shape_color(target, rgb = self.color_rgb_dict[str(system_random.choice(random_color_list))])
+            for crv in crv_list:
+                self.set_curve_shape_color(crv, rgb = self.color_rgb_dict[str(system_random.choice(random_color_list))])
         else:
-            self.set_curve_shape_color(target_list, rgb = None)
-
-
-selection_list = pm.ls(sl = True)
-    curve_shape_list = pm.listRelatives(selection_list, ad = True, type = 'nurbsCurve')
-    curve_list = pm.listRelatives(curve_shape_list, parent = True)
-    curve_list = list(set(curve_list))
-    gen.random_curve_color(curve_list, enable = True)
+            self.set_curve_shape_color(crv_list, rgb = None)
+    
+    def run(self):
+        selection_list = pm.ls(sl = True)
+        curve_shape_list = pm.listRelatives(selection_list, ad = True, type = 'nurbsCurve')
+        curve_list = pm.listRelatives(curve_shape_list, parent = True)
+        curve_list = list(set(curve_list))
+        self.random_curve_color(curve_list, enable = True)
+        
+rcc = RandomCurveColor()
+rcc.run()
