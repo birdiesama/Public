@@ -47,6 +47,24 @@ class RandomCurveColor(object):
         self.color_rgb_dict['grey']         = (0.5, 0.5, 0.5)
         self.color_rgb_dict['light_grey']   = (0.75, 0.75, 0.75)
         self.color_rgb_dict['white']        = (1, 1, 1)
+        
+    def is_list(self, target_list):
+        if not isinstance(target_list, list):
+            target_list = [target_list]
+        return target_list
+    
+    def get_visible_shape(self, mesh):
+        mesh = pm.PyNode(mesh)
+        try:
+            mesh_shape = mesh.getShape()
+            if mesh_shape.isIntermediate():  # It's not the shape we see? Lets run through every shape and see
+                mesh_shape_list = mesh.getShapes()
+                for mesh_shape_prx in mesh_shape_list:
+                    if not mesh_shape_prx.isIntermediate():
+                        mesh_shape = mesh_shape_prx
+            return mesh_shape
+        except:
+            return None
 
     def set_curve_shape_color(self, target_list, rgb=(0, 0, 0)):
         target_list = self.is_list(target_list) # general.misc
