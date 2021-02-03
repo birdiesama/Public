@@ -48,7 +48,7 @@ class RandomCurveColor(object):
         self.color_rgb_dict['light_grey']   = (0.75, 0.75, 0.75)
         self.color_rgb_dict['white']        = (1, 1, 1)
 
-     def set_curve_shape_color(self, target_list, rgb=(0, 0, 0)):
+    def set_curve_shape_color(self, target_list, rgb=(0, 0, 0)):
         target_list = self.is_list(target_list) # general.misc
         for target in target_list:
             target = pm.PyNode(target)
