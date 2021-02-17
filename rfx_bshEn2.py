@@ -17,4 +17,4 @@ bsh_list = list(set(bsh_list))
 for bsh in bsh_list[0:1]:
     if 'OUTPUT' in bsh.nodeName():
         attrNm = bsh.stripNamespace().split('_BS')[0]
-        pm.setAttr('{0}.{1}Shape'.format(bsh.nodeName(), attrNm), 0.1)
+        pm.setAttr('{0}.{1}Shape'.format(bsh.nodeName(), attrNm), value)
