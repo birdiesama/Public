@@ -1,0 +1,16 @@
+import pymel.core as pm
+
+en = True
+
+selection_list = pm.ls(sl = True)
+
+hairSys_list = pm.listRelatives(selection_list, ad = True, type = 'hairSystem')
+
+for hairSys in hairSys_list:
+    if en:
+        hairSys.simulationMethod.set(3)
+        hairSys.active.set(1)
+    else:
+        hairSys.simulationMethod.set(0)
+        hairSys.active.set(0)
+        
