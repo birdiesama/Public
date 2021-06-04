@@ -53,27 +53,25 @@ pm.curve(d = 3, p = pos_list)
 
 ////
 
-sel_pymel.core as pm
+import pymel.core as pm
 
 sel_list = pm.ls(sl = True)
-jnt_list = sel_list
-jnt_list.extend(pm.listRelatives(sel_list, ad = True))
-jnt_list.reverse()
+jnt_list = pm.listRelatives(sel_list, ad = True)
 
 tfm_grp = pm.group(em = True, n = 'pxy_grp')
 
 target_crv = pm.PyNode('SR_rope_anim_crv')
 
-counter = 1
+counter = 0
 
 for jnt in jnt_list:
     poci = pm.createNode('pointOnCurveInfo', n = jnt.nodeName() + '_poci')
     target_crv.worldSpace >> poci.inputCurve
     poci.turnOnPercentage.set(True)
-    par = 1.0/len(jnt_list)*counter
+    par = 1.0/(len(jnt_list)-1)*counter
     poci.parameter.set(par)
-    pxy_group = pm.group(em = True, n = jnt.nodeName() + '_pxy')
+    pxy_grp = pm.group(em = True, n = jnt.nodeName() + '_pxy')
     pm.parent(pxy_grp, tfm_grp)
-    poci.position >> pxy_group.t
-    pm.parentConstraint(pxy_group, jnt, skipRotate = 'None', skipTranslate = 'None', mo = False)
+    poci.position >> pxy_grp.t
+    pm.parentConstraint(pxy_grp, jnt, skipRotate = 'none', skipTranslate = 'none', mo = False)
     counter += 1
