@@ -33,3 +33,20 @@ for val in val_list:
 pm.delete(pointOnCurveInfo)
 
 #print(pointOnCurveInfo)
+
+////
+
+import pymel.core as pm
+
+
+target = pm.PyNode('SR_mouth_riv')
+
+startFrame = pm.playbackOptions(q = True, min = True)
+endFrame = pm.playbackOptions(q = True, max = True)
+
+pos_list = []
+
+for i in range(int(startFrame), int(endFrame+1)):
+    pos_list.append(pm.getAttr(target.t, time = i))
+
+pm.curve(d = 3, p = pos_list)
