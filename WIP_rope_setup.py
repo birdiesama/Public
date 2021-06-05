@@ -118,3 +118,43 @@ tfm_list.reverse()
 for tfm in tfm_list:
     pm.reorder(tfm, front = True)
 
+/////
+
+import pymel.core as pm
+
+sel_list = pm.ls(sl = True)
+jnt_list = pm.listRelatives(sel_list, ad = True)
+
+tfm_grp = pm.group(em = True, n = 'pxy_grp')
+pm.addAttr(tfm_grp, ln = 'par_max', at = 'double', min = 0, max = 1, dv = 1, keyable = True)
+pm.addAttr(tfm_grp, ln = 'par_min', at = 'double', min = 0, max = 1, dv = 0, keyable = True)
+
+target_crv = pm.PyNode('SL_rope_anim_crv')
+
+counter = 0
+
+for jnt in jnt_list:
+    poci = pm.createNode('pointOnCurveInfo', n = jnt.nodeName() + '_poci')
+    target_crv.worldSpace >> poci.inputCurve
+    poci.turnOnPercentage.set(True)
+    
+    # parameter range
+    parRange_pma = pm.createNode('plusMinusAverage', n = jnt.nodeName() + '_parRange_pma')
+    parRange_pma.operation.set(2)
+    tfm_grp.par_max >> parRange_pma.input2D[0].input2Dx
+    tfm_grp.par_min >> parRange_pma.input2D[1].input2Dx
+    
+    # parameter value
+    parVal_mdv = pm.createNode('multiplyDivide', n = jnt.nodeName() + '_parVal_mdv')
+
+    parVal_mdv.operation.set(2)
+    parRange_pma.output2D.output2Dx >> parVal_mdv.i1x
+    parVal_mdv.i2x.set((len(jnt_list)-1)*counter)
+    
+    parVal_mdv.ox >> poci.parameter
+    
+    pxy_grp = pm.group(em = True, n = jnt.nodeName() + '_pxy')
+    pm.parent(pxy_grp, tfm_grp)
+    poci.position >> pxy_grp.t
+    pm.parentConstraint(pxy_grp, jnt, skipRotate = 'none', skipTranslate = 'none', mo = False)
+    counter += 1
