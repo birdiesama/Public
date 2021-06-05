@@ -145,13 +145,18 @@ for jnt in jnt_list:
     tfm_grp.par_min >> parRange_pma.input2D[1].input2Dx
     
     # parameter value
-    parVal_mdv = pm.createNode('multiplyDivide', n = jnt.nodeName() + '_parVal_mdv')
+    parVal_mdv = pm.createNode('multiplyDivide', n = jnt.nodeName() + '_parVal_1_mdv')
 
     parVal_mdv.operation.set(2)
     parRange_pma.output2D.output2Dx >> parVal_mdv.i1x
-    parVal_mdv.i2x.set((len(jnt_list)-1)*counter)
+    parVal_mdv.i2x.set(len(jnt_list)-1)
     
-    parVal_mdv.ox >> poci.parameter
+    parVal_2_mdv = pm.createNode('multiplyDivide', n = jnt.nodeName() + '_parVal_2_mdv')
+    parVal_2_mdv.operation.set(1)
+    parVal_mdv.ox >> parVal_2_mdv.i1x
+    parVal_2_mdv.i2x.set(counter)
+    
+    parVal_2_mdv.ox >> poci.parameter
     
     pxy_grp = pm.group(em = True, n = jnt.nodeName() + '_pxy')
     pm.parent(pxy_grp, tfm_grp)
