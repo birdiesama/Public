@@ -105,3 +105,16 @@ for jnt_cv in jnt_cv_list:
  
  #cmds.skinPercent( 'skinCluster1', 'pPlane1.vtx[100]', transformValue=[('joint1', 0.2), ('joint3', 0.8)])
 
+/////
+
+import pymel.core as pm
+
+sel = pm.ls(sl = True)
+
+tfm_list = pm.listRelatives(sel, ad = True)
+tfm_list.sort()
+tfm_list.reverse()
+
+for tfm in tfm_list:
+    pm.reorder(tfm, front = True)
+
