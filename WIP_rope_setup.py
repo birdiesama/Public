@@ -75,3 +75,33 @@ for jnt in jnt_list:
     poci.position >> pxy_grp.t
     pm.parentConstraint(pxy_grp, jnt, skipRotate = 'none', skipTranslate = 'none', mo = False)
     counter += 1
+
+ ////
+
+import pymel.core as pm
+
+target_crv = pm.PyNode('rope_crv_skin')
+
+cp = target_crv.cp.get(s = True)
+
+jnt_list = []
+jnt_cv_list = []
+
+for i in range(0, cp):
+    cv = pm.PyNode('{0}.cv[{1}]'.format(target_crv.nodeName(), i))
+    cluster = pm.cluster(cv)[1]
+    jnt = pm.createNode('joint', n = target_crv.nodeName() + '_1')
+    pos = pm.xform(cluster, q = True, ws = True, rp = True)
+    pm.xform(jnt, t = pos)
+    pm.delete(cluster)
+    jnt_list.append(jnt)
+    jnt_cv_list.append([jnt, cv])
+
+skinCluster = pm.skinCluster(target_crv, jnt_list)
+
+for jnt_cv in jnt_cv_list:
+    jnt, cv = jnt_cv    
+    pm.skinPercent(skinCluster, cv, transformValue = [(jnt, 1)])
+ 
+ #cmds.skinPercent( 'skinCluster1', 'pPlane1.vtx[100]', transformValue=[('joint1', 0.2), ('joint3', 0.8)])
+
