@@ -156,7 +156,12 @@ for jnt in jnt_list:
     parVal_mdv.ox >> parVal_2_mdv.i1x
     parVal_2_mdv.i2x.set(counter)
     
-    parVal_2_mdv.ox >> poci.parameter
+    parVal_3_pma = pm.createNode('plusMinusAverage', n = jnt.nodeName() + '_parVal_3_pma')
+    parVal_3_pma.operation.set(1)
+    tfm_grp.par_min >> parVal_3_pma.input2D[0].input2Dx
+    parVal_2_mdv.ox >> parVal_3_pma.input2D[1].input2Dx
+    
+    parVal_3_pma.output2D.output2Dx >> poci.parameter
     
     pxy_grp = pm.group(em = True, n = jnt.nodeName() + '_pxy')
     pm.parent(pxy_grp, tfm_grp)
